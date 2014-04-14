@@ -1,0 +1,430 @@
+<?php
+/******************************************************************
+ * Ideabytes Software India Pvt Ltd.                              *
+ * 50 Jayabheri Enclave, Gachibowli, HYD                          *
+ * Created Date : 22/01/2014                                      *
+ * Created By : Gayathri                                          *
+ * Vision : Project Infofam                                       *  
+ * Modified by : Gayathri     Date : 27/03/2014    Version : V1   *
+ * Description :Edit /Add Event Data  form view                   *
+ *****************************************************************/
+include("/layouts/common/header.html");
+
+
+
+$actionLable = (($action == 'editForm') || ($action == 'Edit')) ? "Edit" : "Add";
+$actionLable1 = (($action == 'editForm') || ($action == 'Edit')) ? "Update" : "Add";
+
+$langId = isset($eventData['lang_id']) ?  $eventData['lang_id'] : "";
+$langName = isset($eventData['lang_name']) ?  $eventData['lang_name'] : "";
+$eventName = isset($eventData['event_name']) ?  $eventData['event_name'] : "";
+$name = isset($eventData['name']) ?  $eventData['name'] : "";
+$description = isset($eventData['description']) ? $eventData['description'] : "";
+$tags = isset($eventData['tags']) ?  $eventData['tags'] : "";
+$event_tabs_ids_string = isset($eventData['event_tabs']) ? $eventData['event_tabs'] : "";
+
+//echo "asdf  ".$eventData['about'];echo "<br>";
+//$eventData['about'] = isset($eventData['about']) ? rawurldecode($eventData['about']) : "";
+//echo "<hr><br>".$eventData['about'];
+//exit;
+if(isset($sMsg) && ($sMsg != "")){
+	echo $sMsg;
+}
+?>
+
+<div class="form">
+	<h2><?php echo $actionLable; ?> Event Data</h2>
+	<form action="event_data_management.php" method="post" class="niceform1" id="f1" enctype="multipart/form-data">
+		<fieldset>
+			<dl>
+				<dt><label for="lang">Language :</label></dt>
+				<?php
+				   if($actionLable == "Edit"){
+					   ?>
+						<dd style="padding-top:9px;"> 
+							<?php echo $langName; ?>
+						</dd>
+						<?php
+					}else{
+						 ?>
+						<dd>
+							<select name="language_id" id="language_id">
+								<?php
+									foreach($aAllLangDetails as $key=>$value){
+										?>
+										<option value='<?php echo $key; ?>'><?php echo $value; ?></option>
+										<?php
+									}
+								?>
+							</select>
+						</dd> 
+						 <?php
+					}
+					?>
+			</dl>
+			<dl>
+				
+				<?php
+				if($actionLable == "Edit"){ 
+					?>
+					<dt><label for="event">Event :</label></dt>
+					<dd style="padding-top:9px;"> 
+						<?php echo $eventName; ?>
+					</dd>
+					<?php
+				}else{
+					?>
+					<dt><label for="event">Event <span class="mandatory">*</span>:</label></dt>
+					<dd>
+						<select name="event_id" id="event_id" required>
+							<option value=""> --Select-- </option>
+							
+							<?php
+							foreach($aAllEventDetails as $key=>$value){
+								?>
+								<option value='<?php echo $key; ?>'><?php echo $value; ?></option>
+								<?php
+							}
+							?>
+						</select>
+					</dd> 
+					<?php
+				}
+				?>
+			</dl>	
+			<dl>
+				<dt><label for="">Event Name <span class="mandatory">*</span>:</label></dt>
+				<dd>
+					<input type = "text" name="eventname" id="eventname" value="<?php echo $name; ?>" style="width:300px;" required>
+				</dd> 
+			</dl>
+			<dl>
+				<dt><label for="">Tags :</label></dt>
+				<dd>
+					<textarea name="tags" id="tags" style="width:350px;height:100px;"><?php echo $tags; ?></textarea>
+				</dd> 
+			</dl>
+			<dl>
+				<dt><label for="">Select Category :</label></dt>
+				<dd>
+					<?php
+					if($actionLable == "Edit"){
+						?>
+						<select name="s1" id="s1" >
+							<option value="description">description</option>
+							<?php
+							foreach($data as $row){
+								echo "<option value='".$row."'>".$row."</option>";
+							}
+							?>
+							
+						</select>
+						<?php
+					}else{
+						?>
+						<select name="s1" id="s1" >
+							<option value=""> --Select-- </option>
+							
+						</select>
+						<?php
+					}
+					?>
+				</dd>
+			</dl>
+			<dl>
+				<dt>
+					<label>Select Type of The Tab</label>
+				</dt>
+				<dd>
+					<input type="radio" name="event_tab_type" id="event_tab_type_1" value="1" checked>
+					HTML Editor
+					<input type="radio" name="event_tab_type" id="event_tab_type_2" value="2">
+					Agenda Type
+					<input type="radio" name="event_tab_type" id="event_tab_type_3" value="3">
+					Tab Type
+					
+				</dd>
+			</dl>
+			<dl style="width:685px;">
+				<div class="content_category_wrapper">
+					<div id="type1" class="eventTypehide" style="display:block;">
+						<label for="">Content</label>
+						<textarea name="type_html" id="type_html" class="ckeditor"><?php echo $description; ?></textarea>
+					</div>
+					<div id="type2" class="eventTypehide" >
+						<label for="">Description</label>
+						<textarea name="type_agenta" style="width:400px;height:100px;"></textarea>
+						<table id="itemRows">
+							<thead><th>Date</th><th>Time</th><th>Name</th><th>&nbsp;</th></thead>
+							<tr>
+								<td><input type="text" class="event_dtpic1" name="event_dtpic[]" size="10" id="event_dtpic"></td><td><input type="text" name="time[]" size="20" /> </td><td><input type="text" name="name[]" size="30"/></td><td> <button type="button" onclick="addRow(this.form);" class="btn_small"><img src="layouts/images/add.png" width="20px"height="20px"></button></td> 
+							</tr>
+						</table>
+						
+					</div>
+					<div id="type3" class="eventTypehide" >
+						<table id="itemRows1">
+							<thead><th>Name</th><th>Image</th><th>Content</th><th>&nbsp;</th></thead>
+							<tr>
+								<td><input type="text" name="type3_name1[]" size="20"/></td><td><input type="file" name="type3_file1[]" /> <input type="hidden" name="img_hidden[]" value=""></td><td>
+								<textarea name="type3_content1[]" style="width:200px;height:80px;"></textarea> </td><td>
+								 <button type="button" onclick="addRow1(this.form);" class="btn_small"><img src="layouts/images/add.png" width="20px"height="20px"></button></td> 
+							</tr>
+						</table>
+					</div>
+				</div>
+			</dl>
+			<dl class="submit" style="width:315px;">
+				<input type="hidden" name="event_dataid_hide" id= "event_dataid_hide" value="<?php echo $id; ?>"> 
+				<?php
+				   if($actionLable == "Edit"){ 
+				?>
+						<input type="hidden" name="lid" id= "lid" value="<?php echo $langId; ?>"> 
+				<?php
+					}
+				?>
+				<button class="NFButton" name="action" type="submit" value="<?php echo $actionLable;?>"><?php echo $actionLable1;?> Event Data</button>
+				<button type = "button" class="NFButton" onclick='formReset();'>Clear</button>
+			</dl>
+			<a href="event_data_management.php" class="bt_green"><span class="bt_green_lft"></span><strong>Go Back</strong><span class="bt_green_r"></span></a>
+		</fieldset>
+	</form>	
+	<div id="contentdiv"></div>
+	<div id="div2"></div>
+</div>
+<script src="lib/ckeditor/ckeditor.js"></script>
+<?php
+if($actionLable == "Edit"){ 
+?>
+	<script>
+		jQuery( "#s1" ).change(function () {	
+			
+			var editor = CKEDITOR.instances.type_html;
+			
+			
+			var type2_div_content = '<label for="">Content</label><textarea name="type_agenta" style="width:400px;height:100px;"></textarea><table id="itemRows"><thead><th>Date</th><th>Time</th><th>Name</th><th>&nbsp;</th></thead><tr><td><input type="text" class="event_dtpic1" name="event_dtpic[]" size="10" id="event_dtpic12"></td><td><input type="text" name="time[]" size="20" /> </td><td><input type="text" name="name[]" size="30"/></td><td> <button type="button" onclick="addRow(this.form);" class="btn_small"><img src="layouts/images/add.png" width="20px"height="20px" ></button></td></tr></table>';
+			var type3_div_content ='<table  id="itemRows1"><thead><th>Name</th><th>Image</th><th>Content</th><th>&nbsp;</th></thead><tr><td><input type="text" name="type3_name1[]" size="20"/></td><td><input type="file" name="type3_file1[]" /> <input type="hidden" name="img_hidden[]" value=""> </td><td><textarea name="type3_content1[]" style="width:200px;height:80px;"></textarea> </td><td><button type="button" onclick="addRow1(this.form);" class="btn_small"><img src="layouts/images/add.png" width="20px"height="20px"></button></td> </tr></table>';
+			var arrayFromPHP = <?php echo json_encode($eventData); ?>;
+			
+			var str1 =  $('#s1').val();
+			//alert(arrayFromPHP[str1]);
+			if((arrayFromPHP[str1]=="") || (str1=="")){				
+				$('#event_tab_type_1').prop('checked',true);
+				$("div.eventTypehide").hide();
+				$("#type1").show();
+				$("#type2").html(type2_div_content);
+				$("#type3").html(type3_div_content);
+				editor.setData("");
+			}else if(str1=="description"){
+				$('#event_tab_type_1').prop('checked',true);
+				$("div.eventTypehide").hide();
+				$("#type1").show();
+				$("#type2").html(type2_div_content);
+				$("#type3").html(type3_div_content);
+				editor.setData(arrayFromPHP[str1]);
+			}else{	
+				 
+				//var jsonobj = jQuery.parseJSON(arrayFromPHP[str1]);
+				var jsonobj = jQuery.parseJSON(arrayFromPHP[str1]);
+				var ctype = jsonobj.ctype;
+				var description = jsonobj.description;
+				if(ctype == 2){
+					$('#event_tab_type_'+ctype).prop('checked',true);
+					$("div.eventTypehide").hide();
+					$("#type"+ctype).show();
+					var wholedata = '<label for="">Content</label><textarea name="type_agenta" style="width:400px;height:100px;">'+description+'</textarea>'+'<table id="itemRows"><thead><th>Time</th><th>Name</th><th><button type="button" onclick="addRow(this.form);" class="btn_small"><img src="layouts/images/add.png" width="20px"height="20px"></button></th></thead>';
+					var rowNumUpdate = 0;
+					$.each(jsonobj.data, function(key1,val1){
+						var s1 = val1.time;
+						var s2 = val1.name;
+						
+						utf8DecodeString_2_1 = decodeURIComponent(escape(s1));
+						utf8DecodeString_2_2 = decodeURIComponent(escape(s2));
+						
+						wholedata =  wholedata + '<tr id="rowNumUpdate'+rowNumUpdate+'"><td><input type="text" class="event_dtpic1" id="event_dtpic_update_'+rowNumUpdate+'" name="event_dtpic[]" value="'+val1.date+'" size="10"></td><td><input type="text" name="time[]" size="20" value="'+utf8DecodeString_2_1+'"></td><td> <input type="text" name="name[]" value="'+utf8DecodeString_2_2+'" size="30" ></td><td> <button type="button" onclick="removeRowUpdate('+rowNumUpdate+');" class="btn_small"><img src="layouts/images/remove.png" width="20px"height="20px"></button></td></tr>';
+						rowNumUpdate ++;
+					
+						//alert(val1.time + ":"+val1.name);
+					});
+					//alert(wholedata);
+			 
+					wholedata = wholedata + '</table>';
+					//$("#type"+ctype).html(wholedata);
+					//$("#itemRows").html(wholedata);
+					$("#type2").html(wholedata);
+					//jQuery('#itemRows').append(row);
+					//$("#type1").html(type1_div_content);
+					editor.setData();
+					$("#type3").html(type3_div_content);
+				}else if(ctype ==3){
+					$('#event_tab_type_'+ctype).prop('checked',true);
+					$("div.eventTypehide").hide();
+					$("#type"+ctype).show();
+					var wholedata = '<table id="itemRows1"><thead><th>Name</th><th>Image</th><th>Content</th><th><button   onclick="addRow1(this.form);" type="button" class="btn_small"><img src="layouts/images/add.png" width="20px" height="20px"></button></th></thead>';
+					var rowNumUpdate12 = 0;
+						$.each(jsonobj.data, function(key1,val1){
+							var s1 = val1.name;
+							var s2 = val1.content;
+							
+							utf8DecodeString_3_1 = decodeURIComponent(escape(s1));
+							utf8DecodeString_3_2 = decodeURIComponent(escape(s2));
+							
+							wholedata = wholedata+'<tr id="rowNumUpdate12'+rowNumUpdate12+'"><td><input type="text" name="type3_name1[]" size="20" value="'+utf8DecodeString_3_1+'"/></td><td> <input type="file" name="type3_file1[]"/><img src="<?php echo EVENT_CONTENT_IMAGE_PATH;?>'+val1.image+'" width="50px" height="50px"><input type="hidden" name="img_hidden[]" value="'+val1.image+'"></td><td><textarea name="type3_content1[]" style="width:200px;height:80px;">'+utf8DecodeString_3_2+'</textarea></td><td><button type="button" onclick="removeRowUpdate12('+rowNumUpdate12+');" class="btn_small"><img src="layouts/images/remove.png" width="20px"height="20px"></button></td></tr>';
+						
+							rowNumUpdate12 ++;
+					});
+					
+							
+						
+					//wholedata = '<div id="itemRows1">Name: <input type="text" name="type3_name1[]" size="4" /> Image: <input type="file" name="type3_file1[]" />Content:<textarea name="type3_content1[]"></textarea></div>';
+					wholedata = wholedata+'</table>';
+							
+					$("#type3").html(wholedata);
+					//$("#type1").html(type1_div_content);
+					editor.setData();
+					$("#type2").html(type2_div_content);
+				}else{
+					$('#event_tab_type_'+ctype).prop('checked',true);
+					$("div.eventTypehide").hide();
+					$("#type"+ctype).show();
+					
+					//var editor = CKEDITOR.instances.type_html;			
+					editor.setData(jsonobj.data);
+					$("#type2").html(type2_div_content);
+					$("#type3").html(type3_div_content);
+				}
+		
+			}
+			
+		});
+		function getRawUrlDecode(message){		
+			var dataString = "message="+message;
+			 jQuery.ajax({
+				url: "get_decode.php",
+				type: "post",
+				data: dataString,
+				async: true,
+				success: function(msg){
+					//var content = msg;
+					//return msg;
+					//var s1 = msg;
+					//var s1 = msg;
+					//callback(msg1);
+					$("#type3").html(msg);
+					//alert(msg);
+					
+				}
+			});
+		}
+		
+		function removeRowUpdate(rnum) {
+			jQuery('#rowNumUpdate'+rnum).remove();
+		}
+		function removeRowUpdate12(rnum) {
+			jQuery('#rowNumUpdate12'+rnum).remove();
+		}
+		
+	</script>
+<?php
+}
+?>
+<script>
+function formReset(){
+	document.getElementById('f1').reset();
+	var editor = CKEDITOR.instances.content;
+	editor.setData();
+}
+</script>
+
+
+<script>
+jQuery('#event_id').change(createSelect2);
+
+function createSelect2(){
+    var option = jQuery(this).find(':selected').val(),
+    dataString = "eventId="+option+"&action=ajaxEventTabsSelect";
+	//alert(dataString);
+    if(option != '')
+    {
+        jQuery.ajax({
+            type     : 'GET',
+            //url      : 'ajax_select.php',
+			url      : 'event_data_management.php',
+            data     : dataString,
+            dataType : 'JSON',
+            cache: false,
+            success  : function(data) {  
+			
+                var output = '<option value="description">description</option>';
+				//var output = '';
+                jQuery.each(data.data, function(i,s){
+					var newOption = s;
+					//var splitArray = newOption.split(":::");
+                    //output += '<option value="' + splitArray[0] + '">' + splitArray[1] + '</option>';
+					output += '<option value="' + newOption + '">' + newOption + '</option>';
+                });
+				
+                //jQuery('#s1').empty().append(output);
+				jQuery('#s1').html(output);
+            }
+        }); 
+    }
+    else
+    {
+        console.log("You have to select at least sth");
+    }
+}
+</script>
+<script>
+$(document).ready(function(){ 
+	
+	$('input[name="event_tab_type"]').click(function() {
+		var test = $(this).val();
+		$("div.eventTypehide").hide();
+		$("#type"+test).show();
+	}); 
+});
+</script>
+<script type="text/javascript">
+var rowNum = 0;
+function addRow(frm) {
+	rowNum ++;
+	//var row = '<p id="rowNum'+rowNum+'">Time: <input type="text" name="time[]" size="4" value=""   required> Name: <input type="text" name="name[]" value="" required> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+	
+    var row = '<tr id="rowNum'+rowNum+'"><td><input type="text" class="event_dtpic1" id="event_dtpic_'+rowNum+'" name="event_dtpic[]" value="" size="10"></td><td> <input type="text" name="time[]" size="20" value=""> </td><td> <input type="text" name="name[]" value="" size="30"> </td><td><button type="button" onclick="removeRow('+rowNum+');" class="btn_small"><img src="layouts/images/remove.png" width="20px"height="20px"></button></td></tr>';
+	jQuery('#itemRows').append(row);
+	//frm.add_time.value = '';
+	//frm.add_name.value = '';
+}
+
+function removeRow(rnum) {
+	jQuery('#rowNum'+rnum).remove();
+}
+</script>
+<script type="text/javascript">
+var rowNum1 = 0;
+function addRow1(frm) {
+
+	rowNum1 ++;
+	var row1 = '<tr id="rowNum1'+rowNum1+'"><td><input type="text" name="type3_name1[]" size="20" value=""> </td><td> <input type="file" name="type3_file1[]" value=""><input type="hidden" name="img_hidden[]" value=""></td><td><textarea name="type3_content1[]" style="width:200px;height:80px;"></textarea></td><td><button type="button" onclick="removeRow1('+rowNum1+');" class="btn_small"><img src="layouts/images/remove.png" width="20px"height="20px"></button></td></tr>';
+	jQuery('#itemRows1').append(row1);
+}
+
+function removeRow1(rnum1) {
+	jQuery('#rowNum1'+rnum1).remove();
+}
+</script>
+<link rel="stylesheet" href="layouts/css/style_datepicker.css">
+<script src="layouts/js/js_datepicker.js"></script>
+<script>
+    $(document).on('focusin', '.event_dtpic1', function(){
+      $(this).datepicker({dateFormat: $.datepicker.W3C, changeMonth: true, changeYear: true, yearRange: '2011:2020'});
+    });
+</script>
+ 
+<?php
+include("/layouts/common/footer.html");
+?>
+
+
+ 
